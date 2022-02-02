@@ -26,3 +26,5 @@ Go to ```localhost:3000``` and view the app
 - Redux
 - Router
 - PostgreSQL
+
+## This project is not done yet 
