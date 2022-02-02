@@ -13,6 +13,7 @@ python manage.py runserver
 ```
 ### Frontend
 ```
+cd frontend
 npm i
 npm start
 ```
