@@ -32,7 +32,10 @@ const ProductEditScreen = ({ match, history }) => {
     const { userInfo } = userLogin
 
     useEffect(() => {
-        if (successUpdate) {
+        if (!userInfo || !userInfo.isAdmin) {
+            history.push("/")
+        }
+        else if (successUpdate) {
             dispatch({ type: PRODUCT_UPDATE_RESET })
             history.push("/admin/productlist")
         }

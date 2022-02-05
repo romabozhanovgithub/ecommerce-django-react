@@ -28,7 +28,7 @@ const OrderScreen = ({ match, history }) => {
     const { userInfo } = userLogin
 
     if (!loading & !error) {
-        order.itemsPrice = order.order_items.reduce((acc, item) => acc + item.price * item.qty, 0).toFixed(2);
+        order.itemsPrice = order.orderItems.reduce((acc, item) => acc + item.product.price * item.qty, 0).toFixed(2);
     }
 
     const clientId = "Client id from paypal";
@@ -87,11 +87,11 @@ const OrderScreen = ({ match, history }) => {
                             <p><strong>Email: </strong><a href={`mailto:${order.user.email}`}>{order.user.email}</a></p>
                             <p>
                                 <strong>Shipping: </strong>
-                                {order.shipping_address.address}, {order.shipping_address.city}
+                                {order.shippingAddress.address}, {order.shippingAddress.city}
                                 {" "}
-                                {order.shipping_address.postalCode}
+                                {order.shippingAddress.postalCode}
                                 {" "}
-                                {order.shipping_address.country}
+                                {order.shippingAddress.country}
                             </p>
                             {order.isDelivered ? (
                                 <Message variant="success">Paid on {order.deliveredAt}</Message>
@@ -113,19 +113,19 @@ const OrderScreen = ({ match, history }) => {
                         </ListGroup.Item>
                         <ListGroup.Item>
                             <h2>Order Items</h2>
-                            {!order.order_items.length ? <Message variant="info">Your cart is empty</Message> : (
+                            {!order.orderItems.length ? <Message variant="info">Your cart is empty</Message> : (
                                 <ListGroup variant="flush">
-                                    {order.order_items.map((item, index) => (
+                                    {order.orderItems.map((item, index) => (
                                         <ListGroup.Item key={index}>
                                             <Row>
                                                 <Col md={1}>
-                                                    <Image src={item.image} alt={item.name} fluid rounded/>
+                                                    <Image src={item.product.image} alt={item.product.name} fluid rounded/>
                                                 </Col>
                                                 <Col>
-                                                    <Link to={`/product/${item.product}`}>{item.name}</Link>
+                                                    <Link to={`/product/${item.product.id}`}>{item.product.name}</Link>
                                                 </Col>
                                                 <Col md={4}>
-                                                    {item.qty} X ${item.price} = ${(item.qty * item.price).toFixed(2)}
+                                                    {item.qty} X ${item.product.price} = ${(item.qty * item.product.price).toFixed(2)}
                                                 </Col>
                                             </Row>
                                         </ListGroup.Item>
@@ -180,7 +180,7 @@ const OrderScreen = ({ match, history }) => {
                             )}
                         </ListGroup>
                         {loadingDeliver && <Loader/>}
-                        {userInfo && userInfo.is_staff && order.is_paid && !order.is_delivered && (
+                        {userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && (
                             <ListGroup.Item>
                                 <Button type="button" clasName="bnt btn-block" onClick={deliverHandler}>
                                     Mark As Delivered

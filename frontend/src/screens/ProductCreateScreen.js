@@ -31,7 +31,7 @@ const ProductCreateScreen = ({ match, history }) => {
             dispatch({ type: PRODUCT_CREATE_RESET })
             history.push("/admin/productlist")
         }
-        else if (!userInfo || !userInfo.is_admin) {
+        else if (!userInfo || !userInfo.isAdmin) {
             history.push("/")
         }
     }, [dispatch, history, successCreate])
@@ -41,7 +41,6 @@ const ProductCreateScreen = ({ match, history }) => {
         dispatch(createProduct({
             name,
             price,
-            image,
             brand,
             category,
             countInStock,

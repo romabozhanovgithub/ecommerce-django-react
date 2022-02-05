@@ -19,10 +19,10 @@ const UserListScreen = ({ history }) => {
     const { success: successDelete } = userDelete
 
     useEffect(() => {
-        if (userInfo && userInfo.is_admin) {
+        if (userInfo && userInfo.isAdmin) {
             dispatch(listUsers())
         }
-        else if (!userInfo || !userInfo.is_admin) {
+        else if (!userInfo || !userInfo.isAdmin) {
             history.push("/login")
         }
     }, [dispatch, history, successDelete, userInfo])
@@ -57,7 +57,7 @@ const UserListScreen = ({ history }) => {
                                 <td>{user.id}</td>
                                 <td>{user.name}</td>
                                 <td>{user.email}</td>
-                                <td>{user.is_admin ? (
+                                <td>{user.isAdmin ? (
                                     <i className="fas fa-check" style={{ color: "green" }}></i>
                                 ) : (
                                     <i className="fas fa-check" style={{ color: "red" }}></i>

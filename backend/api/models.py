@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 
 class Product(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="products", null=True)
     name = models.CharField(max_length=200, null=True, blank=True)
     image = models.ImageField(null=True, blank=True, default="/") # add placeholder image
     brand = models.CharField(max_length=200, null=True, blank=True)
@@ -20,8 +20,8 @@ class Product(models.Model):
 
 
 class Review(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name="reviews", null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="reviews", null=True)
     name = models.CharField(max_length=200, null=True, blank=True)
     rating = models.IntegerField(null=True, blank=True, default=0)
     comment = models.TextField(null=True, blank=True)
@@ -32,7 +32,7 @@ class Review(models.Model):
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="orders", null=True)
     payment_method = models.CharField(max_length=200, null=True, blank=True)
     tax_price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     shipping_price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
@@ -47,19 +47,16 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
-    name = models.CharField(max_length=200, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, related_name="orderitems", null=True)
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, related_name="orderitems", null=True)
     qty = models.IntegerField(null=True, blank=True, default=0)
-    price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
-    image = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return self.name
 
 
 class ShippingAddress(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="address", null=True)
     address = models.CharField(max_length=200, null=True, blank=True)
     city = models.CharField(max_length=200, null=True, blank=True)
     postal_code = models.CharField(max_length=200, null=True, blank=True)

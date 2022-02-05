@@ -93,6 +93,7 @@ export const deleteProduct = (id) => async (dispatch, getState) => {
 }
 
 export const createProduct = (product) => async (dispatch, getState) => {
+    console.log(product)
     try {
         dispatch({ type: PRODUCT_CREATE_REQUEST })
         const { userLogin: { userInfo }, } = getState()
@@ -114,6 +115,7 @@ export const createProduct = (product) => async (dispatch, getState) => {
             type: PRODUCT_CREATE_SUCCESS,
             payload: data
         })
+        console.log(data)
     } catch (error) {
         dispatch({
             type: PRODUCT_CREATE_FAIL,

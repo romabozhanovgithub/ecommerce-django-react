@@ -67,7 +67,7 @@ const ProductScreen = ({ match, history }) => {
                                     <h4>{product.name}</h4>
                                 </ListGroup.Item>
                                 <ListGroup.Item>
-                                    <Rating value={product.rating} text={`${product.num_reviews} reviews`} color={"#f8e825"}/>
+                                    <Rating value={product.rating} text={`${product.numReviews} reviews`} color={"#f8e825"}/>
                                 </ListGroup.Item>
                                 <ListGroup.Item>
                                     Price: ${product.price}
@@ -96,11 +96,11 @@ const ProductScreen = ({ match, history }) => {
                                                 Status:
                                             </Col>
                                             <Col>
-                                                {product.count_in_stock > 0 ? "In Stock" : "Out of Stock"}
+                                                {product.countInStock > 0 ? "In Stock" : "Out of Stock"}
                                             </Col>
                                         </Row>
                                     </ListGroup.Item>
-                                    {product.count_in_stock > 0 && (
+                                    {product.countInStock > 0 && (
                                         <ListGroup.Item>
                                             <Row>
                                                 <Col>
@@ -109,7 +109,7 @@ const ProductScreen = ({ match, history }) => {
                                                 <Col className="my-1" xs="auto">
                                                     <Form.Control as="select" value={qty} onChange={(e) => setQty(e.target.value)}>
                                                         {
-                                                            [...Array(product.count_in_stock).keys()].map((x) => (
+                                                            [...Array(product.countInStock).keys()].map((x) => (
                                                                 <option key={x + 1} value={x + 1}>
                                                                     {x + 1}
                                                                 </option>
@@ -121,7 +121,7 @@ const ProductScreen = ({ match, history }) => {
                                         </ListGroup.Item>
                                     )}
                                     <ListGroup.Item>
-                                        <Button className="btn-block" onClick={addToCartHandler} disabled={!(product.count_in_stock > 0)} type="button">Add to Cart</Button>
+                                        <Button className="btn-block" onClick={addToCartHandler} disabled={!(product.countInStock > 0)} type="button">Add to Cart</Button>
                                     </ListGroup.Item>
                                 </ListGroup>    
                             </Card>                

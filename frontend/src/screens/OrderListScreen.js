@@ -16,10 +16,10 @@ const OrderListScreen = ({ history }) => {
     const { userInfo } = userLogin
 
     useEffect(() => {
-        if (userInfo && userInfo.is_admin) {
+        if (userInfo && userInfo.isAdmin) {
             dispatch(listOrders())
         }
-        else if (!userInfo || !userInfo.is_admin) {
+        else if (!userInfo || !userInfo.isAdmin) {
             history.push("/login")
         }
     }, [dispatch, history, userInfo])
@@ -49,15 +49,15 @@ const OrderListScreen = ({ history }) => {
                             <tr key={order.id}>
                                 <td>{order.id}</td>
                                 <td>{order.user && order.user.name}</td>
-                                <td>{order.created_at.substring(0, 10)}</td>
-                                <td>{order.total_price}</td>
-                                <td>{order.is_paid ? (
-                                    order.paid_at.substring(0, 10)
+                                <td>{order.createdAt.substring(0, 10)}</td>
+                                <td>{order.totalPrice}</td>
+                                <td>{order.isPaid ? (
+                                    order.paidAt.substring(0, 10)
                                 ) : (
                                     <i className="fas fa-check" style={{ color: "red" }}></i>
                                 )}</td>
-                                <td>{order.is_delivered ? (
-                                    order.delivered_at.substring(0, 10)
+                                <td>{order.isDelivered ? (
+                                    order.deliveredAt.substring(0, 10)
                                 ) : (
                                     <i className="fas fa-check" style={{ color: "red" }}></i>
                                 )}</td>

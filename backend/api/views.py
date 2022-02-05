@@ -132,17 +132,9 @@ def create_product(request):
     user = request.user
     data = request.data
 
-    product = Product.objects.create(
-        user=user,
-        name=data["name"],
-        price=data["price"],
-        brand=data["brand"],
-        count_in_stock=data["countInStock"],
-        category=data["category"],
-        description=data["description"]
-    )
-
-    serializer = ProductSerializer(product)
+    serializer = ProductSerializer(data=data)
+    serializer.is_valid()
+    serializer.save(user=user)
     return Response(serializer.data)
 
 
@@ -152,16 +144,9 @@ def update_product(request, pk):
     data = request.data
     product = Product.objects.get(id=pk)
 
-    product.name = data["name"]
-    product.price = data["price"]
-    product.brand = data["brand"]
-    product.count_in_stock = data["countInStock"]
-    product.category = data["category"]
-    product.description = data["description"]
-
-    product.save()
-
-    serializer = ProductSerializer(product, many=False)
+    serializer = ProductSerializer(product, data=data, many=False)
+    serializer.is_valid()
+    serializer.save()
     return Response(serializer.data)
 
 
@@ -191,43 +176,17 @@ def add_order_items(request):
     user = request.user
     data = request.data
 
-    order_items = data["orderItems"]
+    # shipping = ShippingAddress.objects.create(
+    #     order=order,
+    #     address=data["shippingAddress"]["address"],
+    #     city=data["shippingAddress"]["city"],
+    #     postal_code=data["shippingAddress"]["postalCode"],
+    #     country=data["shippingAddress"]["country"],
+    # )
 
-    if order_items and not len(order_items):
-        return Response({"detail": "No Order Items"}, status=status.HTTP_400_BAD_REQUEST)
-    
-    order = Order.objects.create(
-        user=user,
-        payment_method=data["paymentMethod"],
-        tax_price=data["taxPrice"],
-        shipping_price=data["shippingPrice"],
-        total_price=data["totalPrice"]
-    )
-
-    shipping = ShippingAddress.objects.create(
-        order=order,
-        address=data["shippingAddress"]["address"],
-        city=data["shippingAddress"]["city"],
-        postal_code=data["shippingAddress"]["postalCode"],
-        country=data["shippingAddress"]["country"],
-    )
-
-    for i in order_items:
-        product = Product.objects.get(id=i["product"])
-
-        item = OrderItem.objects.create(
-            product=product,
-            order=order,
-            name=product.name,
-            qty=i["qty"],
-            price=i["price"],
-            image=product.image.url,
-        )
-
-        product.count_in_stock -= item.qty
-        product.save()
-
-    serialzier = OrderSerializer(order, many=False)
+    serialzier = OrderSerializer(data=data, many=False)
+    serialzier.is_valid()
+    serialzier.save(user=user)
     return Response(serialzier.data)
 
 
@@ -235,7 +194,7 @@ def add_order_items(request):
 @permission_classes([IsAuthenticated])
 def get_my_orders(request):
     user = request.user
-    orders = user.order_set.all()
+    orders = user.orders.all()
     serializer = OrderSerializer(orders, many=True)
     return Response(serializer.data)
 
@@ -254,15 +213,15 @@ def get_order_by_id(request, pk):
     user = request.user
 
     try:
-        order = Order.objects.get(id=pk)
-
+        order = Order.objects.filter(id=pk).select_related("user").first()
+        
         if user.is_staff or order.user == user:
             serializer = OrderSerializer(order, many=False)
             return Response(serializer.data)
-        
+            
         return Response({"detail": "Not authorized to view this order"}, status=status.HTTP_400_BAD_REQUEST)
     except:
-        return Response({"detail": "Order does not exists"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "Order does not exists"})
 
 
 @api_view(["PUT"])
@@ -295,7 +254,7 @@ def create_review(request, pk):
     data = request.data
     product = Product.objects.get(id=pk)
 
-    if product.review_set.filter(user=user).exists():
+    if product.reviews.filter(user=user).exists():
         return Response({"detail": "Product review already exists"}, status=status.HTTP_400_BAD_REQUEST)
     elif not data["rating"] or not data["comment"]:
         return Response({"detail": "Review details"}, status=status.HTTP_400_BAD_REQUEST)
@@ -310,7 +269,7 @@ def create_review(request, pk):
     product.num_reviews += 1
     rating = 0
 
-    for i in product.review_set.all():
+    for i in product.reviews.all():
         rating += i.rating
 
     product.rating = rating / product.num_reviews
